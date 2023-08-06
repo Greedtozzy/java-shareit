@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserStorage storage;
-    private final UserMapper mapper = new UserMapper();
+    private final UserMapper mapper;
 
     @Override
     public List<UserDto> getAll() {

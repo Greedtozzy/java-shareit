@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage repository;
-    private final ItemMapper mapper = new ItemMapper();
+    private final ItemMapper mapper;
 
     @Override
     public List<ItemDto> getAll(long userId) {
@@ -36,12 +36,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto add(long userId, ItemDto itemDto) {
-        return mapper.toItemDto(repository.add(userId, mapper.toItem(itemDto, userId)));
+        return mapper.toItemDto(repository.add(userId, mapper.toItem(itemDto)));
     }
 
     @Override
     public ItemDto update(long userId, ItemDto itemDto, long itemId) {
-        return mapper.toItemDto(repository.update(userId, mapper.toItem(itemDto, userId), itemId));
+        return mapper.toItemDto(repository.update(userId, mapper.toItem(itemDto), itemId));
     }
 
     @Override
