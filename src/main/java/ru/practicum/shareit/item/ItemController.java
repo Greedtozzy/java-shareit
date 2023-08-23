@@ -6,8 +6,11 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.RequestCommentDto;
+import ru.practicum.shareit.item.dto.ResponseCommentDto;
 import ru.practicum.shareit.item.service.ItemService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -24,9 +27,10 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto get(@PathVariable long itemId) {
+    public ItemDto get(@PathVariable long itemId,
+                       @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Get item by item id {}", itemId);
-        return service.get(itemId);
+        return service.get(itemId, userId);
     }
 
     @GetMapping("/search")
@@ -56,5 +60,13 @@ public class ItemController {
                            @PathVariable long itemId) {
         log.info("User {} deleted item by id {}", userId, itemId);
         service.delete(userId, itemId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public ResponseCommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
+                                         @PathVariable long itemId,
+                                         @Valid @RequestBody RequestCommentDto comment) {
+        log.info("User {} add comment to item {}", userId, itemId);
+        return service.addComment(comment, userId, itemId);
     }
 }

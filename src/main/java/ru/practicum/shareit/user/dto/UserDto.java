@@ -17,7 +17,7 @@ public class UserDto {
     @NotBlank(groups = {NewUser.class})
     String name;
     @NotNull(groups = {NewUser.class})
-    @Email(groups = {NewUser.class})
+    @Email
     String email;
 
     public interface NewUser {

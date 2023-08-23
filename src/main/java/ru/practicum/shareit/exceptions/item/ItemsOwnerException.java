@@ -1,4 +1,4 @@
-package ru.practicum.shareit.exceptions;
+package ru.practicum.shareit.exceptions.item;
 
 public class ItemsOwnerException extends RuntimeException {
     public ItemsOwnerException(String message) {
