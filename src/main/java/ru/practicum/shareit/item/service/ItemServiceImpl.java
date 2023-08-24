@@ -95,7 +95,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public ResponseCommentDto addComment(RequestCommentDto dto, long userId, long itemId) {
+    public CommentDto addComment(CommentDto dto, long userId, long itemId) {
         List<Booking> bookings = bookingRepository
                 .findAllByBookerIdAndItemIdAndStatusIsAndStartIsBefore(userId, itemId, BookStatus.APPROVED, LocalDateTime.now());
         if (bookings.isEmpty()) {

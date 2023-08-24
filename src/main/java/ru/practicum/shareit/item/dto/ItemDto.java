@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.booking.dto.ShortBookingDto;
+import ru.practicum.shareit.booking.dto.BookingDto;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
@@ -25,9 +25,9 @@ public class ItemDto {
     @NotNull(groups = {NewItem.class})
     @AssertTrue(groups = {NewItem.class})
     Boolean available;
-    ShortBookingDto lastBooking;
-    ShortBookingDto nextBooking;
-    List<ResponseCommentDto> comments;
+    BookingDto lastBooking;
+    BookingDto nextBooking;
+    List<CommentDto> comments;
 
     public interface NewItem {
     }

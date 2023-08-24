@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.Future;
+import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RequestBookingDto {
     long itemId;
-    @Future(groups = {RequestBookingDto.NewBooking.class})
+    @FutureOrPresent(groups = {RequestBookingDto.NewBooking.class})
     @NotNull(groups = {RequestBookingDto.NewBooking.class})
     LocalDateTime start;
     @Future(groups = {RequestBookingDto.NewBooking.class})

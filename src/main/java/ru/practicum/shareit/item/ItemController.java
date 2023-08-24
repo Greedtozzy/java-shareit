@@ -6,11 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.RequestCommentDto;
-import ru.practicum.shareit.item.dto.ResponseCommentDto;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -63,9 +61,9 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseCommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
-                                         @PathVariable long itemId,
-                                         @Valid @RequestBody RequestCommentDto comment) {
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
+                                 @PathVariable long itemId,
+                                 @Validated(CommentDto.NewComment.class) @RequestBody CommentDto comment) {
         log.info("User {} add comment to item {}", userId, itemId);
         return service.addComment(comment, userId, itemId);
     }

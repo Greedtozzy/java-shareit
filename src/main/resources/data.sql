@@ -1,1 +1,0 @@
-merge into booking_statuses (id, name) values (0, 'WAITING'), (1, 'APPROVED'), (2, 'REJECTED'), (3, 'CANCELED')

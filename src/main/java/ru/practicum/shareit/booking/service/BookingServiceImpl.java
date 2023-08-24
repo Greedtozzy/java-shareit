@@ -1,10 +1,12 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.RequestBookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.ResponseBookingDto;
+import ru.practicum.shareit.booking.model.BookState;
 import ru.practicum.shareit.booking.model.BookStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -34,23 +36,24 @@ public class BookingServiceImpl implements BookingService {
     public ResponseBookingDto add(RequestBookingDto requestBookingDto, long userId) {
         Item item = ItemMapper.toItem(itemService.get(requestBookingDto.getItemId(), userId));
         User booker = UserMapper.toUser(userService.getById(userId));
-        Booking booking = new Booking();
 
+        if (userId == item.getId()) {
+            throw new BookingsUserException(String.format("User by id %d is an owner of item by id %d", userId, item.getId()));
+        }
+        if (!requestBookingDto.getStart().isBefore(requestBookingDto.getEnd())) {
+            throw new BookingTimeException("End must be after start");
+        }
+        if (!item.getAvailable()) {
+            throw new ItemAvailableException(String.format("Item by id %d is not available", item.getId()));
+        }
+
+        Booking booking = new Booking();
         booking.setStart(requestBookingDto.getStart());
         booking.setEnd(requestBookingDto.getEnd());
         booking.setItem(item);
         booking.setBooker(booker);
         booking.setStatus(BookStatus.WAITING);
 
-        if (userId == item.getId()) {
-            throw new BookingsUserException(String.format("User by id %d is an owner of item by id %d", userId, item.getId()));
-        }
-        if (!booking.getStart().isBefore(booking.getEnd())) {
-            throw new BookingTimeException("End must be after start");
-        }
-        if (!item.getAvailable()) {
-            throw new ItemAvailableException(String.format("Item by id %d is not available", booking.getItem().getId()));
-        }
         return BookingMapper.toResponseBookingDto(repository.save(booking));
     }
 
@@ -89,47 +92,57 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public List<ResponseBookingDto> getAll(long userId, String state) {
         userService.getById(userId);
-            switch (state) {
-                case "ALL":
-                    return toResponseBookingDto(repository.findAllByBookerIdOrderByStartDesc(userId));
-                case "PAST":
-                    return toResponseBookingDto(repository.findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now()));
-                case "FUTURE":
-                    return toResponseBookingDto(repository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId, LocalDateTime.now()));
-                case "CURRENT":
-                    return toResponseBookingDto(repository.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId, LocalDateTime.now(), LocalDateTime.now()));
-                case "WAITING":
-                    return toResponseBookingDto(repository.findAllByBookerIdAndStatusIsOrderByStartDesc(userId, BookStatus.WAITING));
-                case "REJECTED":
-                    return toResponseBookingDto(repository.findAllByBookerIdAndStatusIsOrderByStartDesc(userId, BookStatus.REJECTED));
-            }
-            throw new BookingStateException(String.format("Unknown state: %s", state));
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        switch (toState(state)) {
+            case ALL:
+                return toResponseBookingDto(repository.findAllByBookerId(userId, sort));
+            case PAST:
+                return toResponseBookingDto(repository.findAllByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), sort));
+            case FUTURE:
+                return toResponseBookingDto(repository.findAllByBookerIdAndStartIsAfter(userId, LocalDateTime.now(),sort));
+            case CURRENT:
+                return toResponseBookingDto(repository.findAllByBookerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(), LocalDateTime.now(), sort));
+            case WAITING:
+                return toResponseBookingDto(repository.findAllByBookerIdAndStatusIs(userId, BookStatus.WAITING, sort));
+            case REJECTED:
+                return toResponseBookingDto(repository.findAllByBookerIdAndStatusIs(userId, BookStatus.REJECTED, sort));
+        }
+        throw new BookingStateException(String.format("Unknown state: %s", state));
     }
 
     @Override
     @Transactional
     public List<ResponseBookingDto> getAllByUser(long userId, String state) {
         userService.getById(userId);
-            switch (state) {
-                case "ALL":
-                    return toResponseBookingDto(repository.findAllByOwnerId(userId));
-                case "PAST":
-                    return toResponseBookingDto(repository.findPastByOwnerId(userId, LocalDateTime.now()));
-                case "FUTURE":
-                    return toResponseBookingDto(repository.findFutureByOwnerId(userId, LocalDateTime.now()));
-                case "CURRENT":
-                    return toResponseBookingDto(repository.findCurrentByOwnerId(userId, LocalDateTime.now()));
-                case "WAITING":
-                    return toResponseBookingDto(repository.findWaitingByOwnerId(userId, BookStatus.WAITING));
-                case "REJECTED":
-                    return toResponseBookingDto(repository.findRejectedByOwnerId(userId, BookStatus.REJECTED));
-            }
-            throw new BookingStateException(String.format("Unknown state: %s", state));
+        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        switch (toState(state)) {
+            case ALL:
+                return toResponseBookingDto(repository.findAllByOwnerId(userId, sort));
+            case PAST:
+                return toResponseBookingDto(repository.findPastByOwnerId(userId, LocalDateTime.now(), sort));
+            case FUTURE:
+                return toResponseBookingDto(repository.findFutureByOwnerId(userId, LocalDateTime.now(), sort));
+            case CURRENT:
+                return toResponseBookingDto(repository.findCurrentByOwnerId(userId, LocalDateTime.now(), sort));
+            case WAITING:
+                return toResponseBookingDto(repository.findWaitingByOwnerId(userId, BookStatus.WAITING, sort));
+            case REJECTED:
+                return toResponseBookingDto(repository.findRejectedByOwnerId(userId, BookStatus.REJECTED, sort));
+        }
+        throw new BookingStateException(String.format("Unknown state: %s", state));
     }
 
     private List<ResponseBookingDto> toResponseBookingDto(List<Booking> bookings) {
         return bookings.stream()
                 .map(BookingMapper::toResponseBookingDto)
                 .collect(Collectors.toList());
+    }
+
+    private BookState toState(String state) {
+        try {
+            return BookState.valueOf(state);
+        } catch (Exception e) {
+            throw new BookingStateException(String.format("Unknown state: %s", state));
+        }
     }
 }

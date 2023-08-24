@@ -1,13 +1,13 @@
 package ru.practicum.shareit.item.dto;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-@Component
+@UtilityClass
 public class ItemMapper {
 
     public static ItemDto toItemDto(Item item) {
@@ -16,8 +16,8 @@ public class ItemMapper {
         itemDto.setName(item.getName());
         itemDto.setDescription(item.getDescription());
         itemDto.setAvailable(item.getAvailable());
-        if (item.getLastBooking() != null) itemDto.setLastBooking(BookingMapper.toShortBookingDto(item.getLastBooking()));
-        if (item.getNextBooking() != null) itemDto.setNextBooking(BookingMapper.toShortBookingDto(item.getNextBooking()));
+        if (item.getLastBooking() != null) itemDto.setLastBooking(BookingMapper.toBookingDto(item.getLastBooking()));
+        if (item.getNextBooking() != null) itemDto.setNextBooking(BookingMapper.toBookingDto(item.getNextBooking()));
         if (item.getComments() != null) {
             itemDto.setComments(item.getComments().stream().map(CommentMapper::toResponseCommentDto).collect(Collectors.toList()));
         } else {
@@ -33,9 +33,5 @@ public class ItemMapper {
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
         return item;
-    }
-
-    public static ShortItemDto toShortItemDto(Item item) {
-        return new ShortItemDto(item.getId(), item.getName());
     }
 }

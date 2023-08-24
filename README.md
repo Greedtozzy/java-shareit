@@ -1,9 +1,9 @@
 # java-shareit
-Template repository for Shareit project.
+Template repository for ShareIt project.
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="/Filmorate DB v3.0.png">
-    <img src="/Filmorate DB v3.0.png">
+    <source media="(prefers-color-scheme: dark)" srcset="/ShareIt v1.1.png">
+    <img src="/ShareIt v1.1.png">
 </picture>
 
 ## Приложение представляет из себя
