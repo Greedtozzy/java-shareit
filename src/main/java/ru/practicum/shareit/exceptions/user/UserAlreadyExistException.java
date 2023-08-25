@@ -1,4 +1,4 @@
-package ru.practicum.shareit.exceptions;
+package ru.practicum.shareit.exceptions.user;
 
 public class UserAlreadyExistException extends RuntimeException {
     public UserAlreadyExistException(String message) {

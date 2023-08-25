@@ -1,15 +1,25 @@
 package ru.practicum.shareit.booking.dto;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.user.dto.UserMapper;
 
-@Component
+@UtilityClass
 public class BookingMapper {
-    public BookingDto toBookingDto(Booking booking) {
-        return null;
+
+    public static ResponseBookingDto toResponseBookingDto(Booking booking) {
+        ResponseBookingDto dto = new ResponseBookingDto();
+        dto.setId(booking.getId());
+        dto.setStart(booking.getStart());
+        dto.setEnd(booking.getEnd());
+        dto.setItem(ItemMapper.toItemDto(booking.getItem()));
+        dto.setBooker(UserMapper.toUserDto(booking.getBooker()));
+        dto.setStatus(booking.getStatus());
+        return dto;
     }
 
-    public Booking toBooking(BookingDto bookingDto) {
-        return null;
+    public static BookingDto toBookingDto(Booking booking) {
+        return new BookingDto(booking.getId(), booking.getStart(), booking.getEnd(), booking.getBooker().getId());
     }
 }
