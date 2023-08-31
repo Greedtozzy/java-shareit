@@ -1,15 +1,15 @@
 package ru.practicum.shareit.request.dto;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.request.model.ItemRequest;
 
-@Component
+@UtilityClass
 public class ItemRequestMapper {
-    public ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
-        return null;
-    }
-
-    public ItemRequest toItemRequest(ItemRequestDto itemRequestDto) {
-        return null;
+    public  static ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
+        ItemRequestDto dto = new ItemRequestDto();
+        dto.setId(itemRequest.getId());
+        dto.setDescription(itemRequest.getDescription());
+        dto.setCreated(itemRequest.getCreated());
+        return dto;
     }
 }

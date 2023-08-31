@@ -10,6 +10,7 @@ import ru.practicum.shareit.exceptions.item.ItemAvailableException;
 import ru.practicum.shareit.exceptions.dto.ErrorResponse;
 import ru.practicum.shareit.exceptions.item.ItemNotFoundException;
 import ru.practicum.shareit.exceptions.item.ItemsOwnerException;
+import ru.practicum.shareit.exceptions.request.ItemRequestNotFoundException;
 import ru.practicum.shareit.exceptions.user.EmailAlreadyExistException;
 import ru.practicum.shareit.exceptions.user.UserAlreadyExistException;
 import ru.practicum.shareit.exceptions.user.UserNotFoundException;
@@ -55,6 +56,12 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleItemRequestNotFoundException(final ItemRequestNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBookingTimeException(final BookingTimeException e) {
         return new ErrorResponse(e.getMessage());
@@ -93,6 +100,12 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleCommentException(final CommentException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlePaginationException(final PaginationException e) {
         return new ErrorResponse(e.getMessage());
     }
 }

@@ -9,7 +9,7 @@ email varchar(100) not null unique
 create table if not exists requests (
 id serial not null primary key,
 description varchar(255),
-requester_id bigint not null references users(id) on delete cascade,
+requestor_id bigint not null references users(id) on delete cascade,
 created timestamp without time zone not null
 );
 

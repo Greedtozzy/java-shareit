@@ -28,6 +28,7 @@ public class ItemDto {
     BookingDto lastBooking;
     BookingDto nextBooking;
     List<CommentDto> comments;
+    long requestId;
 
     public interface NewItem {
     }
