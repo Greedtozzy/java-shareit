@@ -97,7 +97,7 @@ public class ItemServiceImpl implements ItemService {
         Item updatedItem = repository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException(String.format("Item by id %d not found", itemId)));
         if (updatedItem.getOwner().getId() != userId) {
-            throw new ItemsOwnerException(String.format("User by id %d i not an owner", userId));
+            throw new ItemsOwnerException(String.format("User by id %d is not an owner", userId));
         }
         if (itemDto.getName() != null) updatedItem.setName(itemDto.getName());
         if (itemDto.getAvailable() != null) updatedItem.setAvailable(itemDto.getAvailable());
