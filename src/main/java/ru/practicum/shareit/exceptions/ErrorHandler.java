@@ -11,26 +11,12 @@ import ru.practicum.shareit.exceptions.dto.ErrorResponse;
 import ru.practicum.shareit.exceptions.item.ItemNotFoundException;
 import ru.practicum.shareit.exceptions.item.ItemsOwnerException;
 import ru.practicum.shareit.exceptions.request.ItemRequestNotFoundException;
-import ru.practicum.shareit.exceptions.user.EmailAlreadyExistException;
-import ru.practicum.shareit.exceptions.user.UserAlreadyExistException;
 import ru.practicum.shareit.exceptions.user.UserNotFoundException;
 
 import javax.validation.ValidationException;
 
 @RestControllerAdvice
 public class ErrorHandler {
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleUserAlreadyExistException(final UserAlreadyExistException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleEmailAlreadyExistException(final EmailAlreadyExistException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleItemsOwnerException(final ItemsOwnerException e) {
