@@ -44,6 +44,7 @@ public class ItemRequestRepositoryTest {
         requestRepository.deleteAll();
         userRepository.deleteAll();
     }
+
     @Test
     void findAllByRequestorIdTest() {
         List<ItemRequest> requestsByRequestorId = requestRepository.findAllByRequestorId(user.getId(), pageable);
