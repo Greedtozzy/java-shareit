@@ -36,3 +36,11 @@ Template repository for ShareIt project.
 - GET /bookings/{bookingId} - возвращает DTO бронирования с заданным id.
 - GET /bookings - возвращает список DTO бронирований пользователя сделавшего запрос.
 - GET /bookings/owner - возвращает список DTO бронирований на все вещи пользователя, сделавшего запрос.
+
+### Запрос
+#### API:
+- POST /requests - принимает DTO запроса. Создает запрос от лица пользователя, записывает запрос в БД.
+- GET /requests - возвращает список DTO всех запросов пользователя.
+- GET /requests/all - возвращает список DTO всех запросов.
+- GET /requests/{requestId} - возвращает DTO запроса по id.
+- DELETE /requests/{requestId} - удаляет запрос по id.

@@ -1,8 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;

@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.RequestBookingDto;
@@ -10,6 +12,7 @@ import ru.practicum.shareit.booking.model.BookState;
 import ru.practicum.shareit.booking.model.BookStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exceptions.PaginationException;
 import ru.practicum.shareit.exceptions.booking.*;
 import ru.practicum.shareit.exceptions.item.ItemAvailableException;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -90,44 +93,50 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public List<ResponseBookingDto> getAll(long userId, String state) {
+    public List<ResponseBookingDto> getAll(long userId, String state, int from, int size) {
+        if (from < 0 || size < 1) {
+            throw new PaginationException("From must be positive or zero, size must be positive.");
+        }
         userService.getById(userId);
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
         switch (toState(state)) {
             case ALL:
-                return toResponseBookingDto(repository.findAllByBookerId(userId, sort));
+                return toResponseBookingDto(repository.findAllByBookerId(userId, pageable));
             case PAST:
-                return toResponseBookingDto(repository.findAllByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), sort));
+                return toResponseBookingDto(repository.findAllByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), pageable));
             case FUTURE:
-                return toResponseBookingDto(repository.findAllByBookerIdAndStartIsAfter(userId, LocalDateTime.now(),sort));
+                return toResponseBookingDto(repository.findAllByBookerIdAndStartIsAfter(userId, LocalDateTime.now(),pageable));
             case CURRENT:
-                return toResponseBookingDto(repository.findAllByBookerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(), LocalDateTime.now(), sort));
+                return toResponseBookingDto(repository.findAllByBookerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(), LocalDateTime.now(), pageable));
             case WAITING:
-                return toResponseBookingDto(repository.findAllByBookerIdAndStatusIs(userId, BookStatus.WAITING, sort));
+                return toResponseBookingDto(repository.findAllByBookerIdAndStatusIs(userId, BookStatus.WAITING, pageable));
             case REJECTED:
-                return toResponseBookingDto(repository.findAllByBookerIdAndStatusIs(userId, BookStatus.REJECTED, sort));
+                return toResponseBookingDto(repository.findAllByBookerIdAndStatusIs(userId, BookStatus.REJECTED, pageable));
         }
         throw new BookingStateException(String.format("Unknown state: %s", state));
     }
 
     @Override
     @Transactional
-    public List<ResponseBookingDto> getAllByUser(long userId, String state) {
+    public List<ResponseBookingDto> getAllByUser(long userId, String state, int from, int size) {
+        if (from < 0 || size < 1) {
+            throw new PaginationException("From must be positive or zero, size must be positive.");
+        }
         userService.getById(userId);
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
         switch (toState(state)) {
             case ALL:
-                return toResponseBookingDto(repository.findAllByOwnerId(userId, sort));
+                return toResponseBookingDto(repository.findAllByOwnerId(userId, pageable));
             case PAST:
-                return toResponseBookingDto(repository.findPastByOwnerId(userId, LocalDateTime.now(), sort));
+                return toResponseBookingDto(repository.findPastByOwnerId(userId, LocalDateTime.now(), pageable));
             case FUTURE:
-                return toResponseBookingDto(repository.findFutureByOwnerId(userId, LocalDateTime.now(), sort));
+                return toResponseBookingDto(repository.findFutureByOwnerId(userId, LocalDateTime.now(), pageable));
             case CURRENT:
-                return toResponseBookingDto(repository.findCurrentByOwnerId(userId, LocalDateTime.now(), sort));
+                return toResponseBookingDto(repository.findCurrentByOwnerId(userId, LocalDateTime.now(), pageable));
             case WAITING:
-                return toResponseBookingDto(repository.findWaitingByOwnerId(userId, BookStatus.WAITING, sort));
+                return toResponseBookingDto(repository.findWaitingByOwnerId(userId, BookStatus.WAITING, pageable));
             case REJECTED:
-                return toResponseBookingDto(repository.findRejectedByOwnerId(userId, BookStatus.REJECTED, sort));
+                return toResponseBookingDto(repository.findRejectedByOwnerId(userId, BookStatus.REJECTED, pageable));
         }
         throw new BookingStateException(String.format("Unknown state: %s", state));
     }

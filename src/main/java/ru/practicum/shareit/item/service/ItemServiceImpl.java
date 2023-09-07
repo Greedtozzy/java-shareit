@@ -1,18 +1,23 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.BookStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.exceptions.PaginationException;
 import ru.practicum.shareit.exceptions.comment.CommentException;
 import ru.practicum.shareit.exceptions.item.ItemNotFoundException;
 import ru.practicum.shareit.exceptions.item.ItemsOwnerException;
+import ru.practicum.shareit.exceptions.request.ItemRequestNotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -30,12 +35,17 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final UserService userService;
 
     @Override
     @Transactional
-    public List<ItemDto> getAll(long userId) {
-        return repository.findAllByOwnerId(userId).stream()
+    public List<ItemDto> getAll(long userId, int from, int size) {
+        if (from < 0 || size < 1) {
+            throw new PaginationException("From must be positive or zero, size must be positive.");
+        }
+        Pageable pageable = PageRequest.of(from / size, size);
+        return repository.findAllByOwnerId(userId, pageable).stream()
                 .map(this::addComments)
                 .map(this::addLastAndNextBooking)
                 .map(ItemMapper::toItemDto)
@@ -55,9 +65,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public List<ItemDto> search(String text) {
+    public List<ItemDto> search(String text, int from, int size) {
+        if (from < 0 || size < 1) {
+            throw new PaginationException("From must be positive or zero, size must be positive.");
+        }
         if (text.isBlank()) return new ArrayList<>();
-        return repository.search(text).stream()
+        Pageable pageable = PageRequest.of(from / size, size);
+        return repository.search(text, pageable).stream()
                 .map(this::addComments)
                 .map(this::addLastAndNextBooking)
                 .map(ItemMapper::toItemDto)
@@ -69,6 +83,10 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto add(long userId, ItemDto itemDto) {
         Item item = ItemMapper.toItem(itemDto);
         item.setOwner(UserMapper.toUser(userService.getById(userId)));
+        if (itemDto.getRequestId() != 0) {
+            item.setRequest(itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new ItemRequestNotFoundException(String.format("Request by id %d not found", itemDto.getRequestId()))));
+        }
         return ItemMapper.toItemDto(repository.save(item));
     }
 
@@ -79,7 +97,7 @@ public class ItemServiceImpl implements ItemService {
         Item updatedItem = repository.findById(itemId)
                 .orElseThrow(() -> new ItemNotFoundException(String.format("Item by id %d not found", itemId)));
         if (updatedItem.getOwner().getId() != userId) {
-            throw new ItemsOwnerException(String.format("User by id %d i not an owner", userId));
+            throw new ItemsOwnerException(String.format("User by id %d is not an owner", userId));
         }
         if (itemDto.getName() != null) updatedItem.setName(itemDto.getName());
         if (itemDto.getAvailable() != null) updatedItem.setAvailable(itemDto.getAvailable());

@@ -19,9 +19,11 @@ public class ItemController {
     private final ItemService service;
 
     @GetMapping
-    public List<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") long userId,
+                                @RequestParam(value = "from", defaultValue = "0", required = false) int from,
+                                @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
         log.info("Get all items by user id {}", userId);
-        return service.getAll(userId);
+        return service.getAll(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
@@ -32,9 +34,11 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam(value = "text") String text) {
+    public List<ItemDto> search(@RequestParam(value = "text") String text,
+                                @RequestParam(value = "from", defaultValue = "0", required = false) int from,
+                                @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
         log.info("Search items by text {}", text);
-        return service.search(text);
+        return service.search(text, from, size);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces =
@@ -55,7 +59,7 @@ public class ItemController {
 
     @DeleteMapping("/{itemId}")
     public void delete(@RequestHeader("X-Sharer-User-Id") long userId,
-                           @PathVariable long itemId) {
+                       @PathVariable long itemId) {
         log.info("User {} deleted item by id {}", userId, itemId);
         service.delete(userId, itemId);
     }

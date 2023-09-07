@@ -18,6 +18,7 @@ public class ItemMapper {
         itemDto.setAvailable(item.getAvailable());
         if (item.getLastBooking() != null) itemDto.setLastBooking(BookingMapper.toBookingDto(item.getLastBooking()));
         if (item.getNextBooking() != null) itemDto.setNextBooking(BookingMapper.toBookingDto(item.getNextBooking()));
+        if (item.getRequest() != null) itemDto.setRequestId(item.getRequest().getId());
         if (item.getComments() != null) {
             itemDto.setComments(item.getComments().stream().map(CommentMapper::toResponseCommentDto).collect(Collectors.toList()));
         } else {
