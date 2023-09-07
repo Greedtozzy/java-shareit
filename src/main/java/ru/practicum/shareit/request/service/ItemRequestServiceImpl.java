@@ -17,7 +17,6 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,10 +30,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional
     public ItemRequestDto add(long userId, ItemRequestDto requestDto) {
-        ItemRequest itemRequest = new ItemRequest();
+        ItemRequest itemRequest = ItemRequestMapper.toItemRequest(requestDto);
         itemRequest.setRequestor(UserMapper.toUser(userService.getById(userId)));
-        itemRequest.setDescription(requestDto.getDescription());
-        itemRequest.setCreated(LocalDateTime.now());
         ItemRequestDto dto = ItemRequestMapper.toItemRequestDto(repository.save(itemRequest));
         return addItems(dto);
     }

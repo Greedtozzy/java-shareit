@@ -40,11 +40,6 @@ public class UserServiceTest {
     }
 
     @Test
-    void addTestAlreadyExistEmail() {
-
-    }
-
-    @Test
     void getAllTest() {
         when(repository.findAll())
                 .thenReturn(List.of(user));
