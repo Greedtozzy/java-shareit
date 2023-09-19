@@ -12,7 +12,6 @@ import ru.practicum.shareit.booking.model.BookState;
 import ru.practicum.shareit.booking.model.BookStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exceptions.PaginationException;
 import ru.practicum.shareit.exceptions.booking.*;
 import ru.practicum.shareit.exceptions.item.ItemAvailableException;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -94,9 +93,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public List<ResponseBookingDto> getAll(long userId, String state, int from, int size) {
-        if (from < 0 || size < 1) {
-            throw new PaginationException("From must be positive or zero, size must be positive.");
-        }
         userService.getById(userId);
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
         switch (toState(state)) {
@@ -119,9 +115,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public List<ResponseBookingDto> getAllByUser(long userId, String state, int from, int size) {
-        if (from < 0 || size < 1) {
-            throw new PaginationException("From must be positive or zero, size must be positive.");
-        }
         userService.getById(userId);
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
         switch (toState(state)) {

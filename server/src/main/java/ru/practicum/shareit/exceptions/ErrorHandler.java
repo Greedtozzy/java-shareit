@@ -13,8 +13,6 @@ import ru.practicum.shareit.exceptions.item.ItemsOwnerException;
 import ru.practicum.shareit.exceptions.request.ItemRequestNotFoundException;
 import ru.practicum.shareit.exceptions.user.UserNotFoundException;
 
-import javax.validation.ValidationException;
-
 @RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler
@@ -54,12 +52,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(final ValidationException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleBookingsUserException(final BookingsUserException e) {
         return new ErrorResponse(e.getMessage());
@@ -86,12 +78,6 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleCommentException(final CommentException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handlePaginationException(final PaginationException e) {
         return new ErrorResponse(e.getMessage());
     }
 }

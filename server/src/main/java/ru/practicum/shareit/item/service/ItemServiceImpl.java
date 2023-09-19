@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.BookStatus;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exceptions.PaginationException;
 import ru.practicum.shareit.exceptions.comment.CommentException;
 import ru.practicum.shareit.exceptions.item.ItemNotFoundException;
 import ru.practicum.shareit.exceptions.item.ItemsOwnerException;
@@ -41,9 +40,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public List<ItemDto> getAll(long userId, int from, int size) {
-        if (from < 0 || size < 1) {
-            throw new PaginationException("From must be positive or zero, size must be positive.");
-        }
         Pageable pageable = PageRequest.of(from / size, size);
         return repository.findAllByOwnerId(userId, pageable).stream()
                 .map(this::addComments)
@@ -66,9 +62,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public List<ItemDto> search(String text, int from, int size) {
-        if (from < 0 || size < 1) {
-            throw new PaginationException("From must be positive or zero, size must be positive.");
-        }
         if (text.isBlank()) return new ArrayList<>();
         Pageable pageable = PageRequest.of(from / size, size);
         return repository.search(text, pageable).stream()
@@ -129,13 +122,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Item addLastAndNextBooking(Item item) {
+        LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings = bookingRepository.findAllByItemIdAndStatusNot(item.getId(), BookStatus.REJECTED);
         Booking lastBooking = bookings.stream()
-                .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
+                .filter(booking -> booking.getStart().isBefore(now))
                 .max(Comparator.comparing(Booking::getStart))
                 .orElse(null);
         Booking nextBooking = bookings.stream()
-                .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                .filter(booking -> booking.getStart().isAfter(now))
                 .min(Comparator.comparing(Booking::getStart))
                 .orElse(null);
         if (lastBooking != null) item.setLastBooking(lastBooking);

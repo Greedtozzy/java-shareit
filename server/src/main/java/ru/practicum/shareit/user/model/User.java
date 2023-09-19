@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -21,7 +20,6 @@ public class User {
     long id;
     @Column(name = "name", nullable = false, length = 100)
     String name;
-    @Email
     @Column(name = "email", nullable = false, unique = true, length = 100)
     String email;
 }

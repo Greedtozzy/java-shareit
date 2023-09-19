@@ -10,7 +10,6 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Data
@@ -23,7 +22,6 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @NotBlank
     @Column(name = "name", nullable = false)
     String name;
     @Column(name = "description", nullable = false)
