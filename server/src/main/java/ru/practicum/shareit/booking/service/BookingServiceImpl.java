@@ -92,10 +92,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public List<ResponseBookingDto> getAll(long userId, String state, int from, int size) {
+    public List<ResponseBookingDto> getAll(long userId, BookState state, int from, int size) {
         userService.getById(userId);
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
-        switch (toState(state)) {
+        switch (state) {
             case ALL:
                 return toResponseBookingDto(repository.findAllByBookerId(userId, pageable));
             case PAST:
@@ -114,10 +114,10 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public List<ResponseBookingDto> getAllByUser(long userId, String state, int from, int size) {
+    public List<ResponseBookingDto> getAllByUser(long userId, BookState state, int from, int size) {
         userService.getById(userId);
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
-        switch (toState(state)) {
+        switch (state) {
             case ALL:
                 return toResponseBookingDto(repository.findAllByOwnerId(userId, pageable));
             case PAST:
@@ -138,13 +138,5 @@ public class BookingServiceImpl implements BookingService {
         return bookings.stream()
                 .map(BookingMapper::toResponseBookingDto)
                 .collect(Collectors.toList());
-    }
-
-    private BookState toState(String state) {
-        try {
-            return BookState.valueOf(state);
-        } catch (Exception e) {
-            throw new BookingStateException(String.format("Unknown state: %s", state));
-        }
     }
 }

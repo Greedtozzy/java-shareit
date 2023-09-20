@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.RequestBookingDto;
 import ru.practicum.shareit.booking.dto.ResponseBookingDto;
+import ru.practicum.shareit.booking.model.BookState;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class BookingController {
 
     @GetMapping
     public List<ResponseBookingDto> getAll(@RequestHeader("X-Sharer-User-Id") long userId,
-                                           @RequestParam(value = "state", defaultValue = "ALL", required = false) String state,
+                                           @RequestParam(value = "state", defaultValue = "ALL", required = false) BookState state,
                                            @RequestParam(value = "from", defaultValue = "0", required = false) int from,
                                            @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
         log.info("User {} get all {} bookings", userId, state);
@@ -49,7 +50,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<ResponseBookingDto> getAllByUser(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                 @RequestParam(value = "state", defaultValue = "ALL", required = false) String state,
+                                                 @RequestParam(value = "state", defaultValue = "ALL", required = false) BookState state,
                                                  @RequestParam(value = "from", defaultValue = "0", required = false) int from,
                                                  @RequestParam(value = "size", defaultValue = "10", required = false) int size) {
         log.info("User {} get {} bookings on his items", userId, state);
