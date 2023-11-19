@@ -2,8 +2,8 @@
 Template repository for ShareIt project.
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="/ShareIt v1.1.png">
-    <img src="/ShareIt v1.1.png">
+    <source media="(prefers-color-scheme: dark)" srcset="/ShareItDB v1.1.png">
+    <img src="/ShareItDB v1.1.png">
 </picture>
 
 ## Приложение представляет из себя
